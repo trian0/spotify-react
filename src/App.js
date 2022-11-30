@@ -7,6 +7,7 @@ function App() {
   const [token, setToken] = useState("");
   const [searchKey, setSearchKey] = useState("");
   const [albuns, setAlbuns] = useState([]);
+  const [tracks, setTracks] = useState([]);
 
   const CLIENT_ID = "a6c10d8c0a4645148d713092c50057db"
   const REDIRECT_URI = "http://localhost:3000"
@@ -45,15 +46,34 @@ function App() {
       }
     })
 
+    console.log("albums", data.albums.items);
+    console.log("token", token);
     setAlbuns(data.albums.items)
   }
 
+  const searchTracks = async (id) => {
+    const { data } = await axios.get("https://api.spotify.com/v1/albums/" + id + "/tracks", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+
+    setTracks(data.items)
+  }
+
   const renderAlbuns = () => {
-    console.log("ALBUNS", albuns)
     return albuns.map(albuns => (
-      <div key={albuns.id}>
+      <div key={albuns.id} onClick={() => searchTracks(`${albuns.id}`)}>
         {albuns.images.length ? <img width={"100%"} src={albuns.images[0].url} alt="" /> : <div>No Image</div>}
         {albuns.name}
+      </div>
+    ))
+  }
+
+  const renderTracks = () => {
+    return tracks.map(tracks => (
+      <div key={tracks.id}>
+        {tracks.name}
       </div>
     ))
   }
@@ -70,6 +90,7 @@ function App() {
             <button type={"submit"}>Search</button>
             {renderAlbuns()}
           </form> : <h2>Por favor, faça o login!</h2>}
+          {tracks ? renderTracks() : <a></a>}
       </header>
     </div>
   );
