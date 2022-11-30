@@ -51,12 +51,12 @@ function App() {
   const renderAlbuns = () => {
     console.log("ALBUNS", albuns)
     return albuns.map(albuns => (
-        <div key={albuns.id}>
-            {albuns.images.length ? <img width={"100%"} src={albuns.images[0].url} alt=""/> : <div>No Image</div>}
-            {albuns.name}
-        </div>
+      <div key={albuns.id}>
+        {albuns.images.length ? <img width={"100%"} src={albuns.images[0].url} alt="" /> : <div>No Image</div>}
+        {albuns.name}
+      </div>
     ))
-}
+  }
 
   return (
     <div className="App">
@@ -64,10 +64,11 @@ function App() {
         <h1> Spotifyzon </h1>
         {!token ? <a href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}`}> Logar </a>
           : <button onClick={logout}> Sair </button>}
-        <form onSubmit={searchAlbuns}>
-          <input type="text" onChange={e => setSearchKey(e.target.value)} />
-          <button type={"submit"}>Search</button>
-        </form>
+        {token ?
+          <form onSubmit={searchAlbuns}>
+            <input type="text" onChange={e => setSearchKey(e.target.value)} />
+            <button type={"submit"}>Search</button>
+          </form> : <h2>Por favor, faça o login!</h2>}
         {renderAlbuns()}
       </header>
     </div>
