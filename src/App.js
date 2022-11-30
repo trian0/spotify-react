@@ -68,8 +68,8 @@ function App() {
           <form onSubmit={searchAlbuns}>
             <input type="text" onChange={e => setSearchKey(e.target.value)} />
             <button type={"submit"}>Search</button>
+            {renderAlbuns()}
           </form> : <h2>Por favor, faça o login!</h2>}
-        {renderAlbuns()}
       </header>
     </div>
   );
