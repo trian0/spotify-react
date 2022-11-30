@@ -8,6 +8,7 @@ function App() {
   const [searchKey, setSearchKey] = useState("");
   const [albuns, setAlbuns] = useState([]);
   const [tracks, setTracks] = useState([]);
+  const [albumSelected, setAlbumSelected] = useState([]);
 
   const CLIENT_ID = "a6c10d8c0a4645148d713092c50057db"
   const REDIRECT_URI = "http://localhost:3000"
@@ -51,7 +52,8 @@ function App() {
     setAlbuns(data.albums.items)
   }
 
-  const searchTracks = async (id) => {
+  const searchTracks = async (id, albuns) => {
+    setAlbumSelected(albuns)
     const { data } = await axios.get("https://api.spotify.com/v1/albums/" + id + "/tracks", {
       headers: {
         Authorization: `Bearer ${token}`
@@ -63,7 +65,7 @@ function App() {
 
   const renderAlbuns = () => {
     return albuns.map(albuns => (
-      <div key={albuns.id} onClick={() => searchTracks(`${albuns.id}`)}>
+      <div key={albuns.id} onClick={() => searchTracks(albuns.id, albuns)}>
         {albuns.images.length ? <img width={"100%"} src={albuns.images[0].url} alt="" /> : <div>No Image</div>}
         {albuns.name}
       </div>
@@ -84,13 +86,17 @@ function App() {
         <h1> Spotifyzon </h1>
         {!token ? <a href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}`}> Logar </a>
           : <button onClick={logout}> Sair </button>}
-        {token ?
+        {token && !tracks ?
           <form onSubmit={searchAlbuns}>
             <input type="text" onChange={e => setSearchKey(e.target.value)} />
             <button type={"submit"}>Search</button>
             {renderAlbuns()}
-          </form> : <h2>Por favor, faça o login!</h2>}
-          {tracks ? renderTracks() : <a></a>}
+          </form> : tracks && token ?
+            <form className="App-form">
+              {albumSelected.images.length ? <img width={"100%"} src={albumSelected.images[0].url} alt="" /> : <div>No Image</div>}
+              <form>{renderTracks()}</form>
+            </form> : <h2>Por favor, faça o login!</h2>
+        }
       </header>
     </div>
   );
